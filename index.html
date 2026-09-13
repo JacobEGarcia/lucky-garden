@@ -1,0 +1,276 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>LUCKY GARDEN - 猫庭</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@600&family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#14110c;color:#f5f1e8;font-family:'Zen Maru Gothic',sans-serif;overflow:hidden}#v{position:fixed;inset:0}canvas{display:block}#top{position:fixed;top:0;left:0;right:0;padding:18px 22px;display:flex;justify-content:space-between;align-items:flex-start;background:linear-gradient(#14110ce8,transparent);pointer-events:none}.brand{font-family:'Noto Serif JP',serif;font-size:20px;letter-spacing:.22em}.brand small{display:block;font:500 10px 'Zen Maru Gothic';letter-spacing:.3em;color:#c9a227;margin-top:3px}.bank{font:700 12px monospace;color:#e8c75b;border:1px solid #c9a22766;border-radius:20px;padding:8px 13px;background:#14110caa}.bank b{font-size:16px}#bottom{position:fixed;left:14px;right:14px;bottom:14px;display:flex;gap:8px;justify-content:center}.act{position:relative;border:1px solid #c9a22755;background:#201811dc;color:#f5f1e8;border-radius:10px;padding:10px 14px;min-width:72px;font:600 11px 'Zen Maru Gothic';letter-spacing:.08em;cursor:pointer;backdrop-filter:blur(8px)}.act i{font-style:normal;display:block;color:#c9a227;font:600 19px 'Noto Serif JP';margin-bottom:2px}.act.on{background:#6e1a1f;border-color:#c9a227}.dot{position:absolute;background:#c73a24;width:8px;height:8px;border-radius:50%;margin:-4px 0 0 57px;box-shadow:0 0 8px #c73a24}#toast{position:fixed;top:82px;left:50%;transform:translateX(-50%);background:#f5f1e8;color:#251b12;padding:10px 18px;border-left:3px solid #c73a24;font-size:12px;opacity:0;transition:.25s;pointer-events:none;max-width:82vw;text-align:center;box-shadow:0 8px 30px #0007}#toast.show{opacity:1;transform:translate(-50%,5px)}
+.panel{display:none;position:fixed;inset:0;background:#0d0b08e8;z-index:5;overflow:auto;padding:48px 18px 90px}.panel.open{display:block}.paper{max-width:620px;margin:auto;background:#f5f1e8;color:#201811;padding:24px;border-radius:4px;min-height:70vh;box-shadow:0 22px 70px #000}.paper h2{font:600 25px 'Noto Serif JP';margin:0}.sub{font-size:10px;letter-spacing:.25em;color:#8a6a3a;margin-bottom:18px}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}.card{border:1px solid #d6c9ad;padding:12px;min-height:112px;text-align:center;position:relative;background:#fffaf0}.card.locked{filter:grayscale(1);opacity:.42}.catmark{font-size:36px;color:#c9a227}.rare{position:absolute;right:6px;top:5px;color:#c73a24;font:600 9px monospace}.card b{display:block;font-size:13px}.card small{color:#8a6a3a}.buy{border:0;background:#6e1a1f;color:#fff4df;padding:7px 11px;border-radius:3px;margin-top:7px;font:600 10px 'Zen Maru Gothic';cursor:pointer}.buy:disabled{opacity:.35}.close{position:fixed;right:22px;top:18px;z-index:8;background:#c73a24;color:white;border:0;border-radius:50%;width:38px;height:38px;font-size:20px;cursor:pointer}.empty{text-align:center;padding:35px;color:#8a6a3a}.seal{float:right;background:#c73a24;color:#f5f1e8;padding:8px;font:600 17px 'Noto Serif JP'}
+#intro{position:fixed;inset:0;background:#14110cf2;z-index:10;display:flex;align-items:center;justify-content:center;text-align:center}#intro .in{max-width:380px;padding:30px}#intro h1{font:600 32px 'Noto Serif JP';letter-spacing:.14em;margin:0}#intro .jp{color:#c9a227;font-size:12px;letter-spacing:.4em}.mark{font-size:70px;color:#f5f1e8;margin:15px}.start{border:1px solid #c9a227;background:#6e1a1f;color:#f5f1e8;padding:12px 28px;font:600 12px 'Zen Maru Gothic';letter-spacing:.18em;cursor:pointer}.introcopy{font-size:12px;line-height:1.8;color:#c9bd9f;margin:18px 0 25px}@media(max-width:520px){#bottom{gap:4px;left:5px;right:5px}.act{padding:9px 5px;min-width:0;flex:1;font-size:9px}.paper{padding:18px}.grid{grid-template-columns:repeat(2,1fr)}}
+#ver{position:fixed;right:8px;bottom:6px;font:8px monospace;color:#ffffff30;z-index:60;pointer-events:none;letter-spacing:.12em}</style></head><body><div id="v"></div><div id="top"><div class="brand">LUCKY GARDEN<small>猫 庭</small></div><div class="bank">小判 <b id="coins">120</b></div></div><div id="toast"></div><div id="ver">v3.3</div>
+<div id="bottom"><button class="act" data-p="shop"><i>店</i>GOODS</button><button class="act" id="food"><i>食</i>REFILL</button><button class="act" data-p="book"><span id="newdot"></span><i>帳</i>CAT BOOK</button><button class="act" data-p="gifts"><i>贈</i>GIFTS</button><button class="act" id="share"><i>札</i>SHARE</button></div>
+<div class="panel" id="shop"><button class="close">×</button><div class="paper"><div class="seal">店</div><h2>GOODS SHOP</h2><div class="sub">道具屋 · PLACE SOMETHING LOVELY</div><div class="grid" id="shopgrid"></div></div></div>
+<div class="panel" id="book"><button class="close">×</button><div class="paper"><div class="seal">帳</div><h2>CAT BOOK</h2><div class="sub">猫手帳 · CATS WHO REMEMBER YOU</div><div class="sub" id="trustline" style="margin-top:-12px"></div><div class="grid" id="bookgrid"></div></div></div>
+<div class="panel" id="catdetail"><button class="close">×</button><div class="paper" id="catpaper"></div></div>
+<div class="panel" id="gifts"><button class="close">×</button><div class="paper"><div class="seal">贈</div><h2>MEMENTOS</h2><div class="sub">お土産 · SMALL THINGS LEFT BEHIND</div><div id="giftgrid" class="grid"></div></div></div>
+<div id="intro"><div class="in"><div class="jp">猫のいる庭</div><h1>LUCKY GARDEN</h1><div class="mark">招</div><div class="introcopy">Leave food. Place something lovely.<br>Then go live your life.<br><br>The cats visit when you aren't looking.</div><button class="start">OPEN THE GATE</button></div></div>
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js"}}</script><script type="module">
+import * as THREE from 'three';
+const view=document.getElementById('v'),scene=new THREE.Scene();scene.background=new THREE.Color(0xb9c9b2);scene.fog=new THREE.FogExp2(0xb9c9b2,.025);
+const cam=new THREE.PerspectiveCamera(42,innerWidth/innerHeight,.1,100);cam.position.set(7,6.2,9);cam.lookAt(0,.8,0);
+const rend=new THREE.WebGLRenderer({antialias:true,alpha:false});rend.setPixelRatio(Math.min(2,devicePixelRatio));rend.setSize(innerWidth,innerHeight);rend.shadowMap.enabled=true;rend.shadowMap.type=THREE.PCFSoftShadowMap;rend.toneMapping=THREE.ACESFilmicToneMapping;rend.toneMappingExposure=1.05;view.appendChild(rend.domElement);
+scene.add(new THREE.HemisphereLight(0xfff0d3,0x516956,2.1));const sun=new THREE.DirectionalLight(0xffe4b0,3.4);sun.position.set(-4,8,4);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);scene.add(sun);
+const mat=(c,r=.8)=>new THREE.MeshStandardMaterial({color:c,roughness:r});const cream=mat(0xf5f1e8,.45),ink=mat(0x16130e,.9),gold=mat(0xc9a227,.35),ver=mat(0xc73a24,.65),wood=mat(0x513622,.9);
+function mesh(g,m,x,y,z){const q=new THREE.Mesh(g,m);q.position.set(x,y,z);q.castShadow=true;q.receiveShadow=true;scene.add(q);return q}
+// seasons by real month - the garden wears the calendar (JP seasonal motifs)
+const _mn=new Date().getMonth();
+const SEAS=(_mn>=2&&_mn<=4)?{name:'sakura',jp:'\u685a',tree:[0xe8a0b4,0xf2c4d0],leaf:[0xe8a0b4,0xf2c4d0],size:[.14,.18]}
+  :(_mn>=5&&_mn<=7)?{name:'summer',jp:'\u590f',tree:[0x5c8048,0x6f9455],leaf:[0x5c8048,0x8aa860],size:[.12,.15]}
+  :(_mn===11||_mn<=1)?{name:'winter',jp:'\u96ea',tree:[0x6b5c50,0x7d6f60],leaf:[0xffffff,0xeef2f5],size:[.08,.08]}
+  :{name:'momiji',jp:'\u7d05\u8449',tree:[0xa84a32,0xc98238],leaf:[0xa84a32,0xc98238],size:[.16,.2]};
+// garden: clipped moss island + stone path + timber veranda + shoji wall
+mesh(new THREE.CylinderGeometry(5.2,5.6,.45,32),mat(0x71885b,1),0,-.25,0);for(let i=0;i<12;i++){const a=(i-5.5)*.26;const s=mesh(new THREE.CylinderGeometry(.32,.38,.1,9),mat(0xb6ad93,1),Math.sin(a)*i*.18,.05,3.7-i*.55);s.rotation.y=i*.6}
+mesh(new THREE.BoxGeometry(7,.22,2.2),wood,0,.18,-3.75);mesh(new THREE.BoxGeometry(7,3.8,.16),mat(0xe3d7bd,.9),0,2,-4.8);for(let i=-3;i<=3;i++)mesh(new THREE.BoxGeometry(.055,3.7,.2),wood,i,2,-4.7);for(let j=0;j<4;j++)mesh(new THREE.BoxGeometry(7,.045,.2),wood,0,.5+j, -4.7);
+// maple tree
+const trunk=mesh(new THREE.CylinderGeometry(.18,.3,3,9),wood,-3.7,1.35,-1.7);trunk.rotation.z=-.12;for(let i=0;i<16;i++){const a=i*2.4,r=.5+Math.random()*1.1;mesh(new THREE.DodecahedronGeometry(.32+Math.random()*.18),mat(SEAS.tree[i%2],1),-3.7+Math.cos(a)*r,2.7+Math.random()*1.6,-1.7+Math.sin(a)*r)}
+// raked gravel apron with zen rings
+const gravel=(()=>{const c=document.createElement('canvas');c.width=c.height=512;const g=c.getContext('2d');
+g.fillStyle='#d3c8a8';g.fillRect(0,0,512,512);g.strokeStyle='#c4b78f';g.lineWidth=3;
+for(let r=30;r<260;r+=18){g.beginPath();g.arc(256,256,r,0,Math.PI*2);g.stroke();}
+for(let i=0;i<900;i++){g.fillStyle='rgba(140,125,90,.25)';g.fillRect(Math.random()*512,Math.random()*512,2,2);}
+const t=new THREE.CanvasTexture(c);return t})();
+const gravelDisc=mesh(new THREE.CylinderGeometry(7.6,7.8,.18,40),new THREE.MeshStandardMaterial({map:gravel,roughness:1}),0,-.36,0);gravelDisc.receiveShadow=true;
+// stone toro lantern
+const lantern=new THREE.Group();lantern.position.set(-3.2,0,-2.5);scene.add(lantern);
+const stone=mat(0x8f8a80,.95);
+const lp1=new THREE.Mesh(new THREE.CylinderGeometry(.34,.44,.25,8),stone);lp1.position.y=.12;lantern.add(lp1);
+const lp2=new THREE.Mesh(new THREE.CylinderGeometry(.13,.17,.7,8),stone);lp2.position.y=.6;lantern.add(lp2);
+const lp3=new THREE.Mesh(new THREE.BoxGeometry(.5,.34,.5),stone);lp3.position.y=1.1;lantern.add(lp3);
+const lampWin=new THREE.Mesh(new THREE.BoxGeometry(.54,.2,.54),new THREE.MeshStandardMaterial({color:0x2b2118,emissive:0xffb347,emissiveIntensity:0}));lampWin.position.y=1.1;lantern.add(lampWin);
+const lp4=new THREE.Mesh(new THREE.ConeGeometry(.48,.34,4),stone);lp4.rotation.y=Math.PI/4;lp4.position.y=1.44;lantern.add(lp4);
+const lampGlow=new THREE.PointLight(0xffb15e,0,6,2);lampGlow.position.set(-3.2,1.15,-2.5);scene.add(lampGlow);
+const moon=new THREE.Mesh(new THREE.CircleGeometry(.55,32),new THREE.MeshBasicMaterial({color:0xf4ecd8,transparent:true,opacity:0,fog:false}));moon.position.set(-4.5,6.5,-8);scene.add(moon);
+const moonHalo=new THREE.Mesh(new THREE.CircleGeometry(.95,32),new THREE.MeshBasicMaterial({color:0xf4ecd8,transparent:true,opacity:0,fog:false}));moonHalo.position.set(-4.5,6.5,-8.1);scene.add(moonHalo);
+// falling maple leaves
+const _leaves=[];
+for(let i=0;i<14;i++){const lm=new THREE.MeshBasicMaterial({color:SEAS.leaf[i%2],side:THREE.DoubleSide,transparent:true,opacity:.9});
+const lf=new THREE.Mesh(new THREE.PlaneGeometry(SEAS.size[0],SEAS.size[1]),lm);lf.position.set(-4+Math.random()*4,Math.random()*4+1,-2+Math.random()*3);
+lf.userData={ph:Math.random()*6,sp:.25+Math.random()*.2};scene.add(lf);_leaves.push(lf)}
+// weather: roughly a quarter of real hours bring rain - the same sky for every garden
+const _isRainHour=()=>(((Math.floor(Date.now()/3600000)*2654435761)>>>0)%100)<28;
+let _rain=_isRainHour();
+const _rainD=[];
+for(let i=0;i<40;i++){const rd=new THREE.Mesh(new THREE.PlaneGeometry(.012,.32),new THREE.MeshBasicMaterial({color:0x9fb4c4,transparent:true,opacity:.4,side:THREE.DoubleSide}));rd.position.set(-5+Math.random()*10,Math.random()*6,-4+Math.random()*6);rd.rotation.z=.12;rd.visible=false;scene.add(rd);_rainD.push(rd)}
+setInterval(()=>{const r=_isRainHour();if(r!==_rain){_rain=r;toast(r?'雨 - rain settles over the garden. the golden one likes the rain.':'the rain passes. steam rises from the stones.')}},30000);
+if(_rain)setTimeout(()=>toast('雨 - rain settles over the garden. the golden one likes the rain.'),3500);
+// memento shelf on the veranda - gifts appear here in 3D
+const shelfG=new THREE.Group();shelfG.position.set(2.6,.35,-3.6);scene.add(shelfG);
+const shelfB=new THREE.Mesh(new THREE.BoxGeometry(1.6,.07,.5),wood);shelfG.add(shelfB);
+const memRoot=new THREE.Group();memRoot.position.y=.06;shelfG.add(memRoot);
+function rebuildMementos(){memRoot.clear();S.gifts.forEach((id,i)=>{
+  let m;if(id==='koban'){m=new THREE.Mesh(new THREE.SphereGeometry(.09,12,10),gold);m.scale.z=.35;m.rotation.x=-.3}
+  else{m=new THREE.Group();const b=new THREE.Mesh(new THREE.SphereGeometry(.075,12,10),gold);m.add(b);const top=new THREE.Mesh(new THREE.ConeGeometry(.03,.05,8),gold);top.position.y=.09;m.add(top)}
+  m.position.set(-.65+i*.22,.08,0);memRoot.add(m)})}
+rebuildMementos();
+// fireflies - the garden earns its evenings
+const _flies=[];
+for(let i=0;i<10;i++){const f=new THREE.Mesh(new THREE.SphereGeometry(.03,6,6),new THREE.MeshBasicMaterial({color:0xd8f27a,transparent:true,opacity:0}));
+f.userData={ph:Math.random()*6,r:.8+Math.random()*2.4,cx:-2+Math.random()*4,cz:-2+Math.random()*3,h:.5+Math.random()*1.4};
+f.position.set(f.userData.cx,f.userData.h,f.userData.cz);scene.add(f);_flies.push(f)}
+const GOODS=[['cushion','朱の座布団','red cushion',25],['box','不思議な箱','mystery box',40],['fence','竹の小垣','bamboo fence',45],['yarn','金の毛糸','gold yarn',55],['path','石の小道','stone path',60],['dharma','達磨の友','daruma friend',70],['tower','猫の塔','cat tower',90],['furin','涼の風鈴','wind chime',85],['chigura','猫ちぐら','straw cat house',110],['pond','鯉の小池','mini koi pond',120]];
+const FAVS={mugi:'food',sumi:'box',momo:'cushion',cha:'yarn',yuki:'tower',tora:'fence',sora:'furin',gin:'dharma',koban:'path'};
+const MEAN={mugi:'barley',sumi:'ink',momo:'peach',cha:'tea leaves',yuki:'snow',tora:'tiger',sora:'the firmament',koban:'an old gold coin',gin:'silver'};
+const CATS=[['mugi','Mugi','麦','cream tabby',false,0xf0dfbd,'Eats first, naps second, apologizes never.'],['sumi','Sumi','墨','ink-black',false,0x292622,'Vanishes at dusk. Reappears wherever the box is.'],['momo','Momo','桃','calico dreamer',false,0xf3e3ce,'Dreams in circles. The cushion is hers; you only pay for it.'],['cha','Chacha','茶々','round ginger',false,0xcd8045,'Round. Rolls rather than walks. Yarn is a lifestyle.'],['yuki','Yuki','雪','snow-white',false,0xf7f5ec,'Regal. Judges silently from the tallest point available.'],['tora','Tora','寅','shy tiger tabby',false,0xb08c5a,'Shy stripes. Watches the daruma for courage.'],['sora','Sora','宙','blue-grey dreamer',false,0x8b9aa8,'Stares at the koi pond like it owes him answers.'],['gin','Gin','銀','silver shadow',false,0xc9cdd4,'Trains daily with the daruma. Undefeated. The daruma does not know it is a fight.'],['koban','Koban','小判','the golden visitor',true,0xd8aa2c,'A rumor in gold. Comes only where luck is cultivated.']];
+const KEY='lucky-garden-v1';let S={coins:120,food:5,owned:['cushion'],placed:'cushion',seen:[],gifts:[],last:Date.now(),next:Date.now()+35000,newCat:false,visits:0,catVisits:{}};try{Object.assign(S,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){}function save(){S.last=Date.now();localStorage.setItem(KEY,JSON.stringify(S));hud()}
+function hud(){coins.textContent=S.coins;newdot.className=S.newCat?'dot':''}hud();
+document.querySelector('.brand small').textContent='\u732b \u5ead \u00b7 '+SEAS.jp;
+// goods on garden
+const goodsRoot=new THREE.Group();scene.add(goodsRoot);function rebuildGoods(){goodsRoot.clear();let o;if(S.placed==='cushion'){o=new THREE.Mesh(new THREE.CylinderGeometry(.62,.68,.16,18),ver);o.scale.z=.75;o.position.set(1,.18,0)}else if(S.placed==='box'){o=new THREE.Mesh(new THREE.BoxGeometry(1.25,.8,1.1),mat(0xb58a52,1));o.position.set(1,.42,0)}else if(S.placed==='yarn'){o=new THREE.Mesh(new THREE.SphereGeometry(.46,16,12),gold);o.position.set(1,.48,0)}
+else if(S.placed==='dharma'){o=new THREE.Group();const db=new THREE.Mesh(new THREE.SphereGeometry(.34,18,14),ver);db.scale.y=.85;db.position.y=.3;o.add(db);const df=new THREE.Mesh(new THREE.CircleGeometry(.2,18),cream);df.position.set(0,.34,.26);o.add(df);const dg=new THREE.Mesh(new THREE.TorusGeometry(.34,.02,6,24),gold);dg.rotation.x=Math.PI/2;dg.position.y=.16;o.add(dg);o.position.set(1,.1,0)}
+else if(S.placed==='pond'){o=new THREE.Group();const pr=new THREE.Mesh(new THREE.CylinderGeometry(.85,.95,.14,24),mat(0x9a9186,.95));pr.position.y=.07;o.add(pr);const pw=new THREE.Mesh(new THREE.CylinderGeometry(.74,.74,.05,24),new THREE.MeshStandardMaterial({color:0x3d6b7a,roughness:.15,metalness:.3}));pw.position.y=.15;o.add(pw);
+o.userData.ripples=[];for(let k=0;k<2;k++){const rp=new THREE.Mesh(new THREE.TorusGeometry(.3,.012,6,28),new THREE.MeshBasicMaterial({color:0xbfe3ea,transparent:true,opacity:0}));rp.rotation.x=Math.PI/2;rp.position.y=.18;o.add(rp);o.userData.ripples.push(rp)}goodsRoot.userData.koi=[];for(let k=0;k<3;k++){const koi=new THREE.Mesh(new THREE.SphereGeometry(.09,10,8),k%2?ver:cream);koi.scale.set(1.6,.5,.7);koi.userData.ph=k*2.2;o.add(koi);goodsRoot.userData.koi.push(koi)}o.position.set(1,0,0)}else if(S.placed==='furin'){o=new THREE.Group();const fp=new THREE.Mesh(new THREE.CylinderGeometry(.04,.05,1.5,8),wood);fp.position.y=.75;fp.castShadow=true;o.add(fp);
+const fa=new THREE.Mesh(new THREE.CylinderGeometry(.03,.03,.5,8),wood);fa.rotation.z=Math.PI/2;fa.position.set(-.22,1.48,0);o.add(fa);
+const fg=new THREE.Group();fg.position.set(-.42,1.46,0);o.add(fg);
+const bl=new THREE.Mesh(new THREE.SphereGeometry(.14,16,12,0,Math.PI*2,0,Math.PI*.7),new THREE.MeshStandardMaterial({color:0x9fcdd6,roughness:.12,metalness:.1,transparent:true,opacity:.75}));bl.position.y=-.1;fg.add(bl);
+const cp=new THREE.Mesh(new THREE.SphereGeometry(.03,8,6),ver);cp.position.y=-.2;fg.add(cp);
+const tz=new THREE.Mesh(new THREE.BoxGeometry(.07,.3,.006),cream);tz.position.y=-.38;fg.add(tz);
+o.userData.furin=fg;o.position.set(1,0,0)}
+else if(S.placed==='fence'){o=new THREE.Group();const bam=mat(0x9aa464,.85);
+for(let i=0;i<6;i++){const v=new THREE.Mesh(new THREE.CylinderGeometry(.045,.05,.8+((i%2)?.06:0),8),bam);v.position.set(-.62+i*.25,.4,0);v.castShadow=true;o.add(v)}
+for(const h of[.22,.58]){const r=new THREE.Mesh(new THREE.CylinderGeometry(.03,.03,1.5,8),wood);r.rotation.z=Math.PI/2;r.position.set(0,h,.045);o.add(r)}
+const tie=new THREE.Mesh(new THREE.TorusGeometry(.06,.012,6,14),ink);tie.rotation.x=Math.PI/2;tie.position.set(0,.58,.05);o.add(tie);
+o.position.set(1,.02,0)}
+else if(S.placed==='path'){o=new THREE.Group();const st=mat(0x9c968c,.95);
+for(let i=0;i<5;i++){const s=new THREE.Mesh(new THREE.CylinderGeometry(.26+((i*7)%3)*.03,.3+((i*7)%3)*.03,.07,9),st);s.position.set(-.6+i*.32,.035,Math.sin(i*1.4)*.18);s.rotation.y=i*.7;s.receiveShadow=true;o.add(s)}
+o.position.set(1,0,.1)}
+else if(S.placed==='chigura'){o=new THREE.Group();const straw=mat(0xc9a86a,.9),strawD=mat(0xa8854c,.95);
+const dm=new THREE.Mesh(new THREE.SphereGeometry(.55,20,14,0,Math.PI*2,0,Math.PI/2),straw);dm.scale.y=.82;o.add(dm);
+const ring=new THREE.Mesh(new THREE.TorusGeometry(.53,.035,8,26),strawD);ring.rotation.x=Math.PI/2;ring.position.y=.02;o.add(ring);
+for(const ry of[.14,.28]){const w=new THREE.Mesh(new THREE.TorusGeometry(Math.sqrt(Math.max(.01,.55*.55-ry*ry/.82/.82))*.99,.012,6,26),strawD);w.rotation.x=Math.PI/2;w.position.y=ry;o.add(w)}
+const hole=new THREE.Mesh(new THREE.CircleGeometry(.19,20),new THREE.MeshBasicMaterial({color:0x14100a}));hole.position.set(0,.2,.52);o.add(hole);
+const rim=new THREE.Mesh(new THREE.TorusGeometry(.19,.02,6,22),strawD);rim.position.set(0,.2,.53);o.add(rim);
+const ey=new THREE.Group();for(const s of[-1,1]){const e2=new THREE.Mesh(new THREE.SphereGeometry(.028,8,6),new THREE.MeshBasicMaterial({color:0xffc35c}));e2.position.set(s*.07,.22,.48);ey.add(e2)}
+ey.visible=false;o.add(ey);o.userData.eyes=ey;
+o.traverse(m=>{if(m.castShadow!==undefined)m.castShadow=true});hole.castShadow=false;
+o.position.set(1,0,0)}
+else{o=new THREE.Group();const p=new THREE.Mesh(new THREE.CylinderGeometry(.13,.17,2,12),wood);p.position.y=1;o.add(p);const t=new THREE.Mesh(new THREE.CylinderGeometry(.8,.8,.16,20),ver);t.position.y=1.9;o.add(t);o.position.set(1,0,0)}goodsRoot.add(o);goodsRoot.userData.furin=o.userData.furin||null}rebuildGoods();
+// food bowl
+const bowl=new THREE.Group();const bb=new THREE.Mesh(new THREE.CylinderGeometry(.48,.36,.22,20),ver);bowl.add(bb);const kib=new THREE.Mesh(new THREE.CylinderGeometry(.35,.3,.11,20),gold);kib.position.y=.16;bowl.add(kib);bowl.position.set(-1,.13,1);scene.add(bowl);
+function makeCat(rec){const [id,name,jp,desc,rare,col]=rec,g=new THREE.Group(),body=new THREE.Mesh(new THREE.SphereGeometry(.55,24,18),mat(col,.5));body.scale.set(1,.82,1.18);body.position.y=.52;g.add(body);const h=new THREE.Mesh(new THREE.SphereGeometry(.44,24,18),mat(col,.45));h.scale.x=1.1;h.position.set(0,.92,.28);g.add(h);for(const s of[-1,1]){const e=new THREE.Mesh(new THREE.ConeGeometry(.16,.3,4),mat(col,.5));e.rotation.y=Math.PI/4;e.position.set(s*.25,1.28,.24);g.add(e);const eye=new THREE.Mesh(new THREE.TorusGeometry(.08,.018,7,16,Math.PI),ink);eye.rotation.z=Math.PI;eye.position.set(s*.17,.96,.68);g.add(eye)}const nose=new THREE.Mesh(new THREE.ConeGeometry(.035,.04,3),ver);nose.position.set(0,.85,.72);nose.rotation.x=Math.PI/2;g.add(nose);const tail=new THREE.Mesh(new THREE.TorusGeometry(.4,.07,8,22,Math.PI*1.4),mat(col,.5));tail.rotation.set(Math.PI/2,0,-.4);tail.position.set(-.45,.45,-.1);g.add(tail);if(rare){const coin=new THREE.Mesh(new THREE.SphereGeometry(.17,14,10),gold);coin.scale.z=.3;coin.position.set(0,.5,.57);g.add(coin)}g.userData={id,name,jp,base:Math.random()*6,rare};g.visible=false;scene.add(g);return g}
+const zzTex=(()=>{const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');g.fillStyle='#f5f1e8';g.font='700 40px "Zen Maru Gothic",sans-serif';g.textAlign='center';g.fillText('z',32,44);const t=new THREE.CanvasTexture(c);return t})();
+const visitors=CATS.map(makeCat);let active=[];
+visitors.forEach(c=>{const z=new THREE.Mesh(new THREE.PlaneGeometry(.3,.3),new THREE.MeshBasicMaterial({map:zzTex,transparent:true,depthWrite:false}));z.visible=false;scene.add(z);c.userData.zz=z});function spawnVisit(force=false){if(!force&&Date.now()<S.next)return;if(S.food<=0){S.next=Date.now()+120000;save();return}S.food--;const count=Math.random()<(S.placed==='chigura'?.55:.3)?2:1;active.forEach(c=>c.visible=false);active=[];for(let n=0;n<count;n++){let idx;
+if(Math.random()<(_rain?.15:.07)){idx=CATS.length-1}
+else{const pool=CATS.slice(0,-1),ws=pool.map(c=>FAVS[c[0]]===S.placed?3:1);let r=Math.random()*ws.reduce((a,b)=>a+b,0);idx=0;while(r>ws[idx]){r-=ws[idx];idx++}}
+if(active.some(c=>c.userData.id===CATS[idx][0]))idx=(idx+1)%(CATS.length-1);const c=visitors[idx];c.visible=true;c.userData.hop=1.1;c.position.set(4.5,.2,n?-.5:.3);c.userData.tx=1+(n?-1.6:0);c.userData.tz=n?-.2:0;c.rotation.y=n?.25:-.2;if(S.placed==='chigura'||S.placed==='pond'){c.userData.tz=1;c.rotation.y=0}active.push(c);S.visits++;S.catVisits[c.userData.id]=(S.catVisits[c.userData.id]||0)+1;if(!S.seen.includes(c.userData.id)){S.seen.push(c.userData.id);S.newCat=true;toast((c.userData.rare?'A golden bell rings. ':'')+c.userData.name+' visited for the first time!')};if(Math.random()<.22&&S.visits>2&&!S.gifts.includes(c.userData.id)){S.gifts.push(c.userData.id);S.coins+=c.userData.rare?30:8;clink();rebuildMementos();toast(c.userData.name+' left a memento on the shelf.')}}rebuildTrust();S.next=Date.now()+60000+Math.random()*90000;chimeVisit();if(Math.random()<.4)setTimeout(meow,2500);save()}
+// while-away arrival: arrive instantly if next was crossed
+(()=>{const missed=Math.min(6,Math.floor((Date.now()-S.last)/90000));
+if(missed>0&&S.food>0){const eat=Math.min(S.food,missed);S.food-=eat;let gain=0;const who=[];
+for(let i=0;i<eat;i++){const rare=Math.random()<(_rain?.15:.07);const c=CATS[rare?CATS.length-1:Math.floor(Math.random()*(CATS.length-1))];who.push(c[1]);gain+=rare?18:3+Math.floor(Math.random()*5);
+if(!S.seen.includes(c[0])){S.seen.push(c[0]);S.newCat=true}S.catVisits[c[0]]=(S.catVisits[c[0]]||0)+1;
+if(Math.random()<.18&&!S.gifts.includes(c[0])){S.gifts.push(c[0]);gain+=c[4]?30:8}}rebuildMementos();
+S.coins+=gain;S.visits+=eat;save();
+setTimeout(()=>toast('While you were away: '+[...new Set(who)].join(', ')+' visited. +'+gain+' koban'),1500)}
+if(Date.now()>S.next)setTimeout(()=>spawnVisit(true),1000);else setTimeout(()=>spawnVisit(true),5500)})();
+// daily streak
+(()=>{const today=new Date().toDateString();
+if(S.lastDay!==today){
+  const y=new Date(Date.now()-864e5).toDateString();
+  S.streak=(S.lastDay===y?(S.streak||0)+1:1);S.lastDay=today;
+  const bonus=Math.min(20,S.streak*3);S.coins+=bonus;save();
+  setTimeout(()=>toast('DAY '+S.streak+' \u7e01\u8d8c - the garden remembers you. +'+bonus+' koban'),2200);
+}})();
+// trust tiers: the garden grows with visits
+let _tier=-1;
+function rebuildTrust(){
+  const tier=S.visits>=100?4:S.visits>=50?3:S.visits>=25?2:S.visits>=10?1:0;
+  if(tier===_tier)return;const up=_tier>=0&&tier>_tier;_tier=tier;
+  if(!scene.getObjectByName('trust')){const tg=new THREE.Group();tg.name='trust';scene.add(tg)}
+  const tg=scene.getObjectByName('trust');tg.clear();
+  if(tier>=1){const b=new THREE.Mesh(new THREE.CylinderGeometry(.3,.36,.4,12),mat(0x8f8a80,.95));b.position.set(-1.9,.2,-2.4);b.castShadow=true;tg.add(b);
+    const w=new THREE.Mesh(new THREE.CylinderGeometry(.24,.24,.03,12),new THREE.MeshStandardMaterial({color:0x3d6b7a,roughness:.15}));w.position.set(-1.9,.41,-2.4);tg.add(w)}
+  if(tier>=2){const l2=new THREE.Group();l2.position.set(3.5,0,-2.3);tg.add(l2);
+    const p1=new THREE.Mesh(new THREE.CylinderGeometry(.26,.34,.2,8),mat(0x8f8a80,.95));p1.position.y=.1;l2.add(p1);
+    const p2=new THREE.Mesh(new THREE.CylinderGeometry(.1,.13,.55,8),mat(0x8f8a80,.95));p2.position.y=.47;l2.add(p2);
+    const p3=new THREE.Mesh(new THREE.BoxGeometry(.38,.26,.38),new THREE.MeshStandardMaterial({color:0x2b2118,emissive:0xffb347,emissiveIntensity:1.2}));p3.position.y=.86;l2.add(p3);
+    const p4=new THREE.Mesh(new THREE.ConeGeometry(.36,.26,4),mat(0x8f8a80,.95));p4.rotation.y=Math.PI/4;p4.position.y=1.12;l2.add(p4)}
+  if(tier>=3){for(let i=0;i<5;i++){const f=new THREE.Mesh(new THREE.CylinderGeometry(.05,.06,1.1+Math.sin(i)*0.15,8),mat(0x7a8c4f,.9));f.position.set(-4.3+i*.5,.55,1.8+Math.cos(i)*0.2);f.castShadow=true;tg.add(f)}}
+  if(tier>=4){const t4=new THREE.Group();t4.position.set(0,0,-3.6);tg.add(t4);
+    for(const s of[-1,1]){const pl=new THREE.Mesh(new THREE.CylinderGeometry(.09,.12,1.7,10),ver);pl.position.set(s*.95,.85,0);pl.castShadow=true;t4.add(pl);
+      const ft=new THREE.Mesh(new THREE.CylinderGeometry(.16,.18,.08,10),ink);ft.position.set(s*.95,.04,0);t4.add(ft)}
+    const b1=new THREE.Mesh(new THREE.BoxGeometry(2.5,.13,.2),ver);b1.position.y=1.72;b1.castShadow=true;t4.add(b1);
+    const b1c=new THREE.Mesh(new THREE.BoxGeometry(2.66,.05,.24),ink);b1c.position.y=1.81;t4.add(b1c);
+    const b2=new THREE.Mesh(new THREE.BoxGeometry(2.1,.1,.16),ver);b2.position.y=1.44;t4.add(b2);
+    const st=new THREE.Mesh(new THREE.BoxGeometry(.09,.34,.12),ver);st.position.y=1.55;t4.add(st)}
+  if(up)toast('the garden grows with your trust - \u4fe1\u983c tier '+_tier);
+}
+rebuildTrust();
+let AC=null;function audio(){if(!AC){AC=new(window.AudioContext||window.webkitAudioContext)()}return AC}
+function ping(f,d,v){try{const a=audio(),o=a.createOscillator(),g=a.createGain(),t0=a.currentTime;o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(.0001,t0);g.gain.linearRampToValueAtTime(v||.05,t0+.01);g.gain.exponentialRampToValueAtTime(.0005,t0+d);o.connect(g).connect(a.destination);o.start(t0);o.stop(t0+d+.05)}catch(e){}}
+let _rainN=null;
+function rainAudio(){if(_rainN)return;try{const a=audio(),len=2*a.sampleRate,buf=a.createBuffer(1,len,a.sampleRate),d=buf.getChannelData(0);
+  for(let i=0;i<len;i++)d[i]=Math.random()*2-1;
+  const src=a.createBufferSource();src.buffer=buf;src.loop=true;
+  const f=a.createBiquadFilter();f.type='lowpass';f.frequency.value=850;
+  const g=a.createGain();g.gain.value=0;
+  src.connect(f);f.connect(g);g.connect(a.destination);src.start();_rainN={g}}catch(e){}}
+function chimeVisit(){ping(1318,.9);setTimeout(()=>ping(1760,1.2),140)}
+setInterval(()=>{if(S.placed==='furin'&&Math.random()<(_rain?.85:.4)&&!document.hidden){ping(2637,.8,.03);setTimeout(()=>ping(3136,.6,.02),90)}},15000)
+function clink(){ping(2093,.18,.06);setTimeout(()=>ping(2637,.22,.05),70)}
+function meow(){try{const a=audio(),o=a.createOscillator(),g=a.createGain(),f=a.createBiquadFilter(),t0=a.currentTime;o.type='sawtooth';o.frequency.setValueAtTime(660,t0);o.frequency.linearRampToValueAtTime(430,t0+.28);f.type='lowpass';f.frequency.value=900;g.gain.setValueAtTime(.0001,t0);g.gain.linearRampToValueAtTime(.04,t0+.05);g.gain.exponentialRampToValueAtTime(.0005,t0+.34);o.connect(f).connect(g).connect(a.destination);o.start(t0);o.stop(t0+.4)}catch(e){}}
+window.addEventListener('pointerdown',()=>{audio();rainAudio();},{once:true});
+const _ray=new THREE.Raycaster();
+function heartBurst(x,y){for(let i=0;i<5;i++){const h=document.createElement('div');h.textContent='\u2665';h.style.cssText='position:fixed;left:'+(x+(Math.random()*60-30))+'px;top:'+y+'px;color:#c73a24;font-size:'+(12+Math.random()*10)+'px;pointer-events:none;z-index:9;transition:all 1s ease-out';document.body.appendChild(h);requestAnimationFrame(()=>{h.style.transform='translateY(-60px)';h.style.opacity='0'});setTimeout(()=>h.remove(),1100)}}
+rend.domElement.addEventListener('pointerdown',e=>{
+  const r=rend.domElement.getBoundingClientRect();
+  _ray.setFromCamera(new THREE.Vector2(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1),cam);
+  for(const c of active){
+    if(c.userData.hop>0)continue;
+    if(_ray.intersectObject(c,true).length){
+      c.userData.boing=.4;
+      meow();heartBurst(e.clientX,e.clientY);
+      if(Math.random()<.08){S.coins+=2;save();clink();toast(c.userData.name+' fished out a koban for you. +2')}
+      break;
+    }
+  }
+});
+function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),3500)}
+function shopUI(){shopgrid.innerHTML=GOODS.map(x=>`<div class="card"><div class="catmark">${x[1][0]}</div><b>${x[1]}</b><small>${x[2]} · ${x[3]} koban</small><br><small style="color:#b4332c">${CATS.filter(c=>FAVS[c[0]]===x[0]).map(c=>c[1]).join(', ')||'&nbsp;'}</small><br><button class="buy" data-id="${x[0]}" ${S.owned.includes(x[0])?'':' '+(S.coins<x[3]?'disabled':'')}>${S.owned.includes(x[0])?(S.placed===x[0]?'PLACED':'PLACE'):'BUY'}</button></div>`).join('');shopgrid.querySelectorAll('button').forEach(b=>b.onclick=()=>{const x=GOODS.find(y=>y[0]===b.dataset.id);if(!S.owned.includes(x[0])){if(S.coins<x[3])return;S.coins-=x[3];S.owned.push(x[0])}S.placed=x[0];rebuildGoods();save();shopUI();toast(x[1]+' is waiting in the garden.')})}
+function bookUI(){S.newCat=false;save();
+  const tier=S.visits>=100?4:S.visits>=50?3:S.visits>=25?2:S.visits>=10?1:0;
+  const next=S.visits>=100?null:S.visits>=50?100:S.visits>=25?50:S.visits>=10?25:10;
+  document.getElementById('trustline').textContent='信頼 TIER '+tier+' · '+S.visits+' visits'+(next?' · the garden grows again at '+next:' · the garden is whole');bookgrid.innerHTML=CATS.map(x=>{const seen=S.seen.includes(x[0]);return `<div class="card ${seen?'':'locked'}" ${seen?`data-cat="${x[0]}" style="cursor:pointer"`:''}>${x[4]?'<span class="rare">RARE</span>':''}<div class="catmark">${seen?x[2]:'？'}</div><b>${seen?x[1]:'unknown cat'}</b><small>${seen?x[3]+' \u00b7 loves the '+(FAVS[x[0]]==='food'?'food bowl':FAVS[x[0]]):'leave food & wait'}</small></div>`}).join('');
+bookgrid.querySelectorAll('[data-cat]').forEach(el=>el.onclick=()=>openCat(el.dataset.cat))}
+function openCat(id){const x=CATS.find(c=>c[0]===id);
+  document.getElementById('catpaper').innerHTML=`<div class="seal">${x[2]}</div><h2>${x[1].toUpperCase()}</h2><div class="sub">${x[3]}${x[4]?' \u00b7 RARE':''}</div>
+  <div style="font:600 13px 'Noto Serif JP';color:#8a6a3a;margin-bottom:12px">${x[2]} · reads "${x[1].toLowerCase()}" - ${MEAN[id]}</div>
+  <p style="font-size:14px;line-height:1.9;font-style:italic">${x[6]}</p>
+  <p style="font-size:12px;color:#8a6a3a">visits: ${S.catVisits[id]||0} \u00b7 loves the ${FAVS[id]==='food'?'food bowl':FAVS[id]}<br>memento: ${S.gifts.includes(id)?'received \u2665':'not yet - keep the garden welcoming'}</p>`;
+  document.getElementById('catdetail').classList.add('open')}
+let _markImg=null;
+function shareCard(){
+  const draw=im=>{
+    const cv=document.createElement('canvas');cv.width=1200;cv.height=630;const g=cv.getContext('2d');
+    g.fillStyle='#16100a';g.fillRect(0,0,1200,630);
+    g.strokeStyle='#c9a227';g.lineWidth=8;g.strokeRect(30,30,1140,570);g.lineWidth=2;g.strokeRect(48,48,1104,534);
+    g.drawImage(im,80,180,280,280);
+    g.textAlign='left';g.fillStyle='#f5f1e8';g.font='600 84px "Noto Serif JP",serif';
+    g.fillText('LUCKY GARDEN',410,240);
+    g.fillStyle='#c9a227';g.font='500 40px "Zen Maru Gothic",sans-serif';g.fillText('\u732b \u5ead',414,300);
+    g.fillStyle='#d8cdb2';g.font='400 34px "Zen Maru Gothic",sans-serif';
+    g.fillText(S.seen.length+' / '+CATS.length+' cats met   \u00b7   '+S.gifts.length+' mementos   \u00b7   '+S.coins+' koban',410,375);
+    g.fillStyle='#8a6a3a';g.font='400 26px "Zen Maru Gothic",sans-serif';
+    g.fillText(S.seen.length>=CATS.length?'every cat in the garden knows your name.':(S.seen.length>=5?'the garden is starting to trust you.':'the cats visit when you are not looking.'),410,430);
+    g.fillText('jacobegarcia.github.io/lucky-garden',410,540);
+    g.fillStyle='#c73a24';g.fillRect(1040,470,90,90);g.fillStyle='#f5f1e8';g.font='600 56px "Noto Serif JP",serif';g.textAlign='center';g.fillText('\u5409',1085,540);
+    cv.toBlob(async blob=>{
+      const f=new File([blob],'lucky-garden.png',{type:'image/png'});
+      if(navigator.canShare&&navigator.canShare({files:[f]})){
+        try{await navigator.share({files:[f],title:'Lucky Garden',text:S.seen.length+'/'+CATS.length+' cats met in my Lucky Garden'});return}catch(e){if(e&&e.name==='AbortError')return}
+      }
+      const a=document.createElement('a');a.download='lucky-garden.png';a.href=URL.createObjectURL(blob);a.click();
+    },'image/png');
+  };
+  if(_markImg)draw(_markImg);
+  else{const im=new Image();im.onload=()=>{_markImg=im;draw(im)};im.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjgwIDMwIDM0MCAyNDUiIHdpZHRoPSI5MDAiIGhlaWdodD0iOTAwIj4KPGRlZnM+PG1hc2sgaWQ9ImN1dCI+PGcgZmlsbD0iI2ZmZiI+CiAgPHBhdGggZD0iTTI0MCAyNTAgQzE3MCAyNTAgMTMyIDMxMiAxMzAgMzcyIEMxMjggNDIwIDE2MCA0NDYgMjQwIDQ0NiBDMzIwIDQ0NiAzNTIgNDIwIDM1MCAzNzIgQzM0OCAzMTIgMzEwIDI1MCAyNDAgMjUwIFoiLz4KICA8cGF0aCBkPSJNMjQwIDg0IEMzMDAgODQgMzQ0IDEyNiAzNDQgMTgwIEMzNDQgMjMyIDMwMCAyNjQgMjQwIDI2NCBDMTgwIDI2NCAxMzYgMjMyIDEzNiAxODAgQzEzNiAxMjYgMTgwIDg0IDI0MCA4NCBaIi8+CiAgPHBhdGggZD0iTTE3NiAxMDIgUTE2MiA3NiAxNTUgNjIgUTE0OSA1MCAxNTkgNTUgUTE4OCA2OSAyMTQgODIgUTE5NCA5MCAxNzYgMTAyIFoiLz4KICA8cGF0aCBkPSJNMzA0IDEwMiBRMzE4IDc2IDMyNSA2MiBRMzMxIDUwIDMyMSA1NSBRMjkyIDY5IDI2NiA4MiBRMjg2IDkwIDMwNCAxMDIgWiIvPgogIDxwYXRoIGQ9J00xNTIgMjQ4IEMxMzIgMjI0IDExNiAyMDIgMTA2IDE3NiBDOTYgMTUwIDkwIDExOCAxMDQgMTAyIEMxMTggODYgMTQ2IDg4IDE1OCAxMDYgQzE3MCAxMjQgMTY4IDE1MiAxNjAgMTc0IEMxNTQgMTk0IDE2MiAyMTggMTc4IDIzOCBaJy8+CiAgPHBhdGggZD0iTTM0NCAzOTggQzM3OCAzOTQgMzk4IDM2NiAzOTUgMzI4IEMzOTMgMzAyIDM4NCAyODYgMzcwIDI4NyBDMzU3IDI4OCAzNTQgMzAyIDM2MyAzMTEgQzM3MyAzMjEgMzcwIDM0NiAzNTcgMzYwIEMzNDggMzcwIDM0MiAzODIgMzQ0IDM5OCBaIi8+CiAgPGVsbGlwc2UgY3g9IjI0NiIgY3k9IjM1MiIgcng9IjgwIiByeT0iNTQiLz4KICA8cGF0aCBkPSJNMTg2IDMxOCBDMTcyIDMyMiAxNjQgMzM2IDE2OCAzNTAgQzE3MiAzNjQgMTg4IDM3MCAyMDAgMzY0IEwyMDYgMzI2IFoiLz4KICA8Y2lyY2xlIGN4PSIyNDAiIGN5PSIyNzQiIHI9IjE3Ii8+CiAgPGVsbGlwc2UgY3g9IjE5NiIgY3k9IjQzOCIgcng9IjI2IiByeT0iMTQiLz4KICA8ZWxsaXBzZSBjeD0iMjg0IiBjeT0iNDM4IiByeD0iMjYiIHJ5PSIxNCIvPgo8L2c+PGcgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjciIHN0cm9rZS1saW5lY2FwPSJyb3VuZCI+CiAgPHBhdGggZD0iTTE4MiAxNzYgUTE5OSAxOTEgMjE2IDE3NiIgc3Ryb2tlLXdpZHRoPSI4Ii8+CiAgPHBhdGggZD0iTTI2NCAxNzYgUTI4MSAxOTEgMjk4IDE3NiIgc3Ryb2tlLXdpZHRoPSI4Ii8+CiAgPHBhdGggZD0iTTIzNSAxOTIgTDI0NSAxOTIgTDI0MCAyMDEgWiIgZmlsbD0iIzAwMCIgc3Ryb2tlPSJub25lIi8+CiAgPHBhdGggZD0iTTI0MCAyMDMgUTI0MCAyMTMgMjI5IDIxNCBRMjIwIDIxNCAyMjAgMjA2IiBzdHJva2Utd2lkdGg9IjciLz4KICA8cGF0aCBkPSJNMjQwIDIwMyBRMjQwIDIxMyAyNTEgMjE0IFEyNjAgMjE0IDI2MCAyMDYiIHN0cm9rZS13aWR0aD0iNyIvPgogIDxwYXRoIGQ9Ik0xNTYgMTg4IEMxMzYgMTg2IDExOCAxODcgMTAyIDE5MiIgc3Ryb2tlLXdpZHRoPSI1Ii8+CiAgPHBhdGggZD0iTTE1NiAyMDIgQzEzOCAyMDQgMTIyIDIwOCAxMDggMjE0IiBzdHJva2Utd2lkdGg9IjUiLz4KICA8cGF0aCBkPSJNMzI0IDE4OCBDMzQ0IDE4NiAzNjIgMTg3IDM3OCAxOTIiIHN0cm9rZS13aWR0aD0iNSIvPgogIDxwYXRoIGQ9Ik0zMjQgMjAyIEMzNDIgMjA0IDM1OCAyMDggMzcyIDIxNCIgc3Ryb2tlLXdpZHRoPSI1Ii8+CiAgPGVsbGlwc2UgY3g9JzEyOCcgY3k9JzE0NCcgcng9JzEzJyByeT0nMTAnIGZpbGw9JyMwMDAnIHN0cm9rZT0nbm9uZScvPgogIDxlbGxpcHNlIGN4PScxMDgnIGN5PScxMTgnIHJ4PSc2LjUnIHJ5PSc4LjUnIGZpbGw9JyMwMDAnIHN0cm9rZT0nbm9uZScvPgogIDxlbGxpcHNlIGN4PScxMjgnIGN5PScxMTAnIHJ4PSc2LjUnIHJ5PSc4LjUnIGZpbGw9JyMwMDAnIHN0cm9rZT0nbm9uZScvPgogIDxlbGxpcHNlIGN4PScxNDcnIGN5PScxMTknIHJ4PSc2LjUnIHJ5PSc4LjUnIGZpbGw9JyMwMDAnIHN0cm9rZT0nbm9uZScvPgogIDxwYXRoIGQ9Ik0xNzAgMjQ0IFEyNDAgMjY4IDMxMCAyNDQiIHN0cm9rZS13aWR0aD0iOSIvPgogIDxjaXJjbGUgY3g9IjI0MCIgY3k9IjI3NCIgcj0iMTciIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSI2Ii8+CiAgPHBhdGggZD0iTTIzMSAyNzQgTDI0OSAyNzQiIHN0cm9rZS13aWR0aD0iNC41Ii8+CiAgPGVsbGlwc2UgY3g9IjI0NiIgY3k9IjM1MiIgcng9IjY2IiByeT0iNDIiIGZpbGw9Im5vbmUiIHN0cm9rZS13aWR0aD0iNyIvPgo8L2c+PHRleHQgeD0iMjQ2IiB5PSIzNjgiIGZvbnQtZmFtaWx5PSJOb3RvIFNlcmlmIEpQIiBmb250LXdlaWdodD0iNjAwIiBmb250LXNpemU9IjQ2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMDAwIj7npo88L3RleHQ+PC9tYXNrPjwvZGVmcz4KPHJlY3Qgd2lkdGg9IjQ4MCIgaGVpZ2h0PSI0ODAiIGZpbGw9IiNGNUYxRTgiIG1hc2s9InVybCgjY3V0KSIvPjwvc3ZnPg==';}
+}
+document.getElementById('share').onclick=shareCard;
+function giftsUI(){giftgrid.innerHTML=S.gifts.length?S.gifts.map(id=>{const x=CATS.find(c=>c[0]===id);return `<div class="card"><div class="catmark">${id==='koban'?'小判':'鈴'}</div><b>${x[1]}'s gift</b><small>${id==='koban'?'a warm gold koban':'a tiny worn bell'}</small></div>`}).join(''):'<div class="empty">No gifts yet.<br>Cats leave them for gardens they trust.</div>'}
+document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{const id=b.dataset.p;document.getElementById(id).classList.add('open');if(id==='shop')shopUI();if(id==='book')bookUI();if(id==='gifts')giftsUI()});document.querySelectorAll('.close').forEach(b=>b.onclick=()=>b.parentElement.classList.remove('open'));
+food.onclick=()=>{if(S.coins<5){toast('The bowl is empty. Cats sometimes leave koban behind.');return}S.coins-=5;S.food=Math.min(9,S.food+3);save();toast('Fresh bonito flakes. The garden smells inviting.')};document.querySelector('.start').onclick=()=>{intro.style.display='none';spawnVisit(true);};
+let t=0,_dayF=1,_peekT=8,_peekOn=0,_peekNamed=false;
+const dayCol=new THREE.Color(0xb9c9b2),duskCol=new THREE.Color(0x584a5e),nightCol=new THREE.Color(0x151826),tmpCol=new THREE.Color();
+function dayNight(){
+  const h=new Date().getHours()+new Date().getMinutes()/60;
+  const dayF=Math.max(0,Math.sin((h-6)/12*Math.PI));
+  const duskF=Math.max(0,1-Math.abs(h-18.5)/2.2)*(1-dayF);
+  _dayF=dayF;
+  tmpCol.copy(nightCol).lerp(dayCol,dayF).lerp(duskCol,duskF*.7);
+  if(_rain)tmpCol.multiplyScalar(.72);
+  scene.background.copy(tmpCol);scene.fog.color.copy(tmpCol);
+  sun.intensity=(.4+3.2*dayF)*(_rain?.55:1);lampGlow.intensity=dayF<.45?(0.45-dayF)*22:0;
+  lampWin.material.emissiveIntensity=dayF<.45?1.6:0;
+}
+function anim(){requestAnimationFrame(anim);t+=.016;dayNight();
+  const _mn=Math.max(0,1-_dayF*3)*(_rain?.2:1);moon.material.opacity=_mn*.92;moonHalo.material.opacity=_mn*.16;
+  cam.position.x=7+Math.sin(t*.05)*.45;cam.position.y=6.2+Math.sin(t*.037)*.18;cam.lookAt(0,.8,0);
+  for(const f of _flies){const u=f.userData;const on=_dayF<.35;
+    f.material.opacity=on?.35+.4*Math.abs(Math.sin(t*1.6+u.ph)):0;
+    if(on){f.position.x=u.cx+Math.sin(t*.4+u.ph)*u.r;f.position.z=u.cz+Math.cos(t*.3+u.ph*1.3)*u.r;f.position.y=u.h+Math.sin(t*.8+u.ph*2)*.25}}
+  if(S.placed==='pond'&&goodsRoot.userData.koi){goodsRoot.userData.koi.forEach((k,i)=>{const a=t*(.35+i*.09)+k.userData.ph;k.position.set(Math.cos(a)*.35,.17,Math.sin(a)*.35);k.rotation.y=-a});
+    const pg=goodsRoot.children[0];if(pg&&pg.userData.ripples)pg.userData.ripples.forEach((rp,k)=>{const u=(t*(_rain?.95:.5)+k*.5)%1;rp.scale.setScalar(.5+u*1.6);rp.material.opacity=(1-u)*(_rain?.6:.4)})}
+  if(goodsRoot.userData.furin){const fw=_rain?1.9:1;goodsRoot.userData.furin.rotation.z=Math.sin(t*1.1*fw)*.1*fw;goodsRoot.userData.furin.rotation.x=Math.sin(t*.8+1)*.06*fw}
+  if(_rainN)_rainN.g.gain.value+=((_rain?.045:0)-_rainN.g.gain.value)*.03;
+  const cg=goodsRoot.children[0];
+  if(cg&&cg.userData.eyes){if(_peekOn>0){_peekOn-=.016;if(_peekOn<=0)cg.userData.eyes.visible=false}
+    else{_peekT-=.016;if(_peekT<=0){_peekT=14+Math.random()*18;if(Math.random()<.5){cg.userData.eyes.visible=true;_peekOn=2.5+Math.random()*1.5;if(Math.random()<.5)setTimeout(meow,600);
+      if(!_peekNamed){_peekNamed=true;const top=Object.entries(S.catVisits||{}).sort((a,b)=>b[1]-a[1])[0];const who=top&&CATS.find(c=>c[0]===top[0]);if(who)setTimeout(()=>toast(who[1]+' has made the chigura home.'),1200)}}}}}
+  for(const lf of _leaves){const u=lf.userData;lf.position.y-=u.sp*.016;lf.position.x+=Math.sin(t*.9+u.ph)*.005;lf.rotation.z=Math.sin(t*1.3+u.ph)*.8;lf.rotation.x+=.01;if(lf.position.y<0){lf.position.y=4.5;lf.position.x=-4+Math.random()*4}}
+  for(const rd of _rainD){rd.visible=_rain;if(_rain){rd.position.y-=.26;if(rd.position.y<0)rd.position.y=5.5+Math.random()}}active.forEach((c,i)=>{
+  if(c.userData.hop>0){c.userData.hop-=.016;const k=1-Math.max(0,c.userData.hop)/1.1;
+    c.position.x=4.5+(c.userData.tx-4.5)*k;c.position.z=.3+(c.userData.tz-.3)*k;
+    c.position.y=.2+Math.abs(Math.sin(k*Math.PI*3))*.28;
+    if(c.userData.hop<=0)c.position.set(c.userData.tx,.2,c.userData.tz);
+  }else{c.position.y=.2+Math.sin(t*1.2+c.userData.base)*.015;c.rotation.y=-.2+Math.sin(t*.35+c.userData.base)*.04;
+    if(S.placed==='pond'&&c.userData.tz===1){const sip=Math.max(0,Math.sin(t*.5+c.userData.base)-.93)/.07;c.rotation.x=Math.min(1,sip)*.42}else c.rotation.x=0;
+    if(c.userData.boing>0){c.userData.boing-=.016;c.position.y+=Math.abs(Math.sin(c.userData.boing*12))*.22*(c.userData.boing/.4)}}
+  const z=c.userData.zz;if(z){z.position.set(c.position.x,c.position.y+1.6+Math.sin(t*.9+c.userData.base)*.12,c.position.z);z.material.opacity=.5+Math.sin(t*1.1+c.userData.base)*.3;z.visible=c.userData.hop<=0}});bowl.rotation.y=Math.sin(t*.25)*.03;rend.render(scene,cam)}anim();
+addEventListener('resize',()=>{cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();rend.setSize(innerWidth,innerHeight)});setInterval(spawnVisit,5000);
+</script></body></html>
