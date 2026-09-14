@@ -16,7 +16,7 @@
 .panel{display:none;position:fixed;inset:0;background:#0d0b08e8;z-index:5;overflow:auto;padding:48px 18px 90px}.panel.open{display:block}.paper{max-width:620px;margin:auto;background:#f5f1e8;color:#201811;padding:24px;border-radius:4px;min-height:70vh;box-shadow:0 22px 70px #000}.paper h2{font:600 25px 'Noto Serif JP';margin:0}.sub{font-size:10px;letter-spacing:.25em;color:#8a6a3a;margin-bottom:18px}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}.card{border:1px solid #d6c9ad;padding:12px;min-height:112px;text-align:center;position:relative;background:#fffaf0}.card.locked{filter:grayscale(1);opacity:.42}.catmark{font-size:36px;color:#c9a227}.rare{position:absolute;right:6px;top:5px;color:#c73a24;font:600 9px monospace}.card b{display:block;font-size:13px}.card small{color:#8a6a3a}.buy{border:0;background:#6e1a1f;color:#fff4df;padding:7px 11px;border-radius:3px;margin-top:7px;font:600 10px 'Zen Maru Gothic';cursor:pointer}.buy:disabled{opacity:.35}.close{position:fixed;right:22px;top:18px;z-index:8;background:#c73a24;color:white;border:0;border-radius:50%;width:38px;height:38px;font-size:20px;cursor:pointer}.empty{text-align:center;padding:35px;color:#8a6a3a}.seal{float:right;background:#c73a24;color:#f5f1e8;padding:8px;font:600 17px 'Noto Serif JP'}
 #intro{position:fixed;inset:0;background:#14110cf2;z-index:10;display:flex;align-items:center;justify-content:center;text-align:center}#intro .in{max-width:380px;padding:30px}#intro h1{font:600 32px 'Noto Serif JP';letter-spacing:.14em;margin:0}#intro .jp{color:#c9a227;font-size:12px;letter-spacing:.4em}.mark{font-size:70px;color:#f5f1e8;margin:15px}.start{border:1px solid #c9a227;background:#6e1a1f;color:#f5f1e8;padding:12px 28px;font:600 12px 'Zen Maru Gothic';letter-spacing:.18em;cursor:pointer}.introcopy{font-size:12px;line-height:1.8;color:#c9bd9f;margin:18px 0 25px}@media(max-width:520px){#bottom{gap:4px;left:5px;right:5px}.act{padding:9px 5px;min-width:0;flex:1;font-size:9px}.paper{padding:18px}.grid{grid-template-columns:repeat(2,1fr)}}
 #ver{position:fixed;right:8px;bottom:6px;font:8px monospace;color:#ffffff30;z-index:60;pointer-events:none;letter-spacing:.12em}#sib{position:fixed;left:10px;bottom:6px;font:8px monospace;z-index:60;letter-spacing:.12em;pointer-events:auto}#sib a{color:#ffffff3a;text-decoration:none}#sib a:hover{color:#e6c976}
-</style></head><body><div id="v"></div><div id="top"><div class="brand">LUCKY GARDEN<small>猫 庭</small></div><div class="bank">小判 <b id="coins">120</b></div></div><div id="toast"></div><div id="ver">v3.24</div><div id="sib"><a href="https://jacobegarcia.github.io/lucky-cat-tamagotchi/">卵 tama</a> <span style="opacity:.35">·</span> <a href="https://jacobegarcia.github.io/lucky-tama-3d/">3d</a></div>
+</style></head><body><div id="v"></div><div id="top"><div class="brand">LUCKY GARDEN<small>猫 庭</small></div><div class="bank">小判 <b id="coins">120</b></div></div><div id="toast"></div><div id="ver">v3.25</div><div id="sib"><a href="https://jacobegarcia.github.io/lucky-cat-tamagotchi/">卵 tama</a> <span style="opacity:.35">·</span> <a href="https://jacobegarcia.github.io/lucky-tama-3d/">3d</a></div>
 <div id="bottom"><button class="act" data-p="shop"><i>店</i>GOODS</button><button class="act" id="food"><i>食</i>REFILL</button><button class="act" data-p="book"><span id="newdot"></span><i>帳</i>CAT BOOK</button><button class="act" data-p="gifts"><i>贈</i>GIFTS</button><button class="act" id="share"><i>札</i>SHARE</button></div>
 <div class="panel" id="shop"><button class="close">×</button><div class="paper"><div class="seal">店</div><h2>GOODS SHOP</h2><div class="sub">道具屋 · PLACE SOMETHING LOVELY</div><div class="grid" id="shopgrid"></div></div></div>
 <div class="panel" id="book"><button class="close">×</button><div class="paper"><div class="seal">帳</div><h2>CAT BOOK</h2><div class="sub">猫手帳 · CATS WHO REMEMBER YOU</div><div class="sub" id="trustline" style="margin-top:-12px"></div><div class="grid" id="bookgrid"></div></div></div>
@@ -73,6 +73,7 @@ const _rainD=[];
 for(let i=0;i<64;i++){const rd=new THREE.Mesh(new THREE.PlaneGeometry(.012,.32),new THREE.MeshBasicMaterial({color:0x9fb4c4,transparent:true,opacity:.5,side:THREE.DoubleSide}));rd.position.set(-5+Math.random()*10,Math.random()*6,-4+Math.random()*6);rd.rotation.z=.12;rd.visible=false;scene.add(rd);_rainD.push(rd)}
 setInterval(()=>{const r=_isRainHour();if(r!==_rain){_rain=r;toast(r?'雨 - rain settles over the garden. the golden one likes the rain.':'the rain passes. steam rises from the stones.')}},30000);
 if(_rain)setTimeout(()=>toast('雨 - rain settles over the garden. the golden one likes the rain.'),3500);
+{const _h0=_qp.has('h')?+_qp.get('h'):new Date().getHours()+new Date().getMinutes()/60;if(Math.abs(_h0-6.6)<2&&!_rain)setTimeout(()=>toast('朝霧 - morning mist. the garden is still half-asleep.'),3600)}
 // memento shelf on the veranda - gifts appear here in 3D
 const shelfG=new THREE.Group();shelfG.position.set(2.6,.35,-3.6);scene.add(shelfG);
 const shelfB=new THREE.Mesh(new THREE.BoxGeometry(1.6,.07,.5),wood);shelfG.add(shelfB);
@@ -86,6 +87,10 @@ const _flies=[];
 for(let i=0;i<10;i++){const f=new THREE.Mesh(new THREE.SphereGeometry(.03,6,6),new THREE.MeshBasicMaterial({color:0xd8f27a,transparent:true,opacity:0}));
 f.userData={ph:Math.random()*6,r:.8+Math.random()*2.4,cx:-2+Math.random()*4,cz:-2+Math.random()*3,h:.5+Math.random()*1.4};
 f.position.set(f.userData.cx,f.userData.h,f.userData.cz);scene.add(f);_flies.push(f)}
+// morning mist - the garden earns its mornings
+const _mist=[];
+for(let i=0;i<6;i++){const mm=new THREE.Mesh(new THREE.PlaneGeometry(2.6+Math.random()*1.6,1.1+Math.random()*.5),new THREE.MeshBasicMaterial({color:0xf4f2ea,transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide,fog:false}));
+mm.rotation.x=-Math.PI/2;mm.rotation.z=Math.random()*3;mm.position.set(-3+Math.random()*6,.12+i*.07,-2.5+Math.random()*4.5);mm.userData={ph:Math.random()*6,cx:mm.position.x};scene.add(mm);_mist.push(mm)}
 const GOODS=[['cushion','朱の座布団','red cushion',25],['box','不思議な箱','mystery box',40],['fence','竹の小垣','bamboo fence',45],['yarn','金の毛糸','gold yarn',55],['path','石の小道','stone path',60],['dharma','達磨の友','daruma friend',70],['tower','猫の塔','cat tower',90],['furin','涼の風鈴','wind chime',85],['chigura','猫ちぐら','straw cat house',110],['pond','鯉の小池','mini koi pond',120]];
 const FAVS={mugi:'food',sumi:'box',momo:'cushion',cha:'yarn',yuki:'tower',tora:'fence',sora:'furin',gin:'dharma',koban:'path'};
 const MEAN={mugi:'barley',sumi:'ink',momo:'peach',cha:'tea leaves',yuki:'snow',tora:'tiger',sora:'the firmament',koban:'an old gold coin',gin:'silver'};
@@ -280,6 +285,7 @@ document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{const id=b.datas
 food.onclick=()=>{if(S.coins<5){toast('The bowl is empty. Cats sometimes leave koban behind.');return}S.coins-=5;S.food=Math.min(9,S.food+3);save();toast('Fresh bonito flakes. The garden smells inviting.')};document.querySelector('.start').onclick=()=>{intro.style.display='none';spawnVisit(true);};
 let t=0,_dayF=1,_peekT=8,_peekOn=0,_peekNamed=false;
 const dayCol=new THREE.Color(0xb9c9b2),duskCol=new THREE.Color(0x584a5e),nightCol=new THREE.Color(0x151826),tmpCol=new THREE.Color();
+const _mistCol=new THREE.Color(0xf4f2ea);let _mistF=0;
 function dayNight(){
   const h=new Date().getHours()+new Date().getMinutes()/60;
   const hh=_qp.has('h')?+_qp.get('h'):h;
@@ -289,6 +295,8 @@ function dayNight(){
   tmpCol.copy(nightCol).lerp(dayCol,dayF).lerp(duskCol,duskF*.7);
   if(_rain)tmpCol.multiplyScalar(.72);
   scene.background.copy(tmpCol);scene.fog.color.copy(tmpCol);
+  _mistF=Math.max(0,1-Math.abs(hh-6.6)/2)*(_rain?.35:1);
+  scene.fog.density=.025+_mistF*.022;scene.fog.color.lerp(_mistCol,_mistF*.4);
   sun.intensity=(.4+3.2*dayF)*(_rain?.55:1);lampGlow.intensity=dayF<.45?(0.45-dayF)*22:0;
   lampWin.material.emissiveIntensity=dayF<.45?1.6:0;
 }
@@ -296,6 +304,7 @@ function anim(){requestAnimationFrame(anim);t+=.016;dayNight();if(S.placed==='fu
   const _mn=Math.max(0,1-_dayF*3)*(_rain?.2:1);moon.material.opacity=_mn*.92;moonHalo.material.opacity=_mn*.16;if(_pondRef)_pondRef.material.opacity=Math.max(0,(0.3-_dayF)*2.4)*(.45+.55*Math.sin(t*1.1))*(_rain?.3:1);
   if(_qp.has('cam')){const cp=_qp.get('cam').split(',').map(Number);cam.position.set(cp[0]??7,cp[1]??6.2,cp[2]??9);cam.lookAt(cp[3]??0,cp[4]??.8,cp[5]??0)}
   else{cam.position.x=7+Math.sin(t*.05)*.45;cam.position.y=6.2+Math.sin(t*.037)*.18;cam.lookAt(0,.8,0)}
+  for(const m of _mist){const u=m.userData;m.visible=_mistF>.02;m.material.opacity=_mistF*.15;m.position.x=u.cx+Math.sin(t*.07+u.ph)*.9;m.rotation.z+=.0004}
   for(const f of _flies){const u=f.userData;const on=_dayF<.35;
     f.material.opacity=on?.35+.4*Math.abs(Math.sin(t*1.6+u.ph)):0;
     if(on){f.position.x=u.cx+Math.sin(t*.4+u.ph)*u.r;f.position.z=u.cz+Math.cos(t*.3+u.ph*1.3)*u.r;f.position.y=u.h+Math.sin(t*.8+u.ph*2)*.25}}
